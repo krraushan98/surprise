@@ -2,7 +2,7 @@
   "name": "birthday-wish",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://krraushan98.github.io/birthday-wish",
+  "homepage": "https://github.com/krraushan98/surprise",
   "dependencies": {
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
