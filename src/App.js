@@ -94,7 +94,7 @@ function App() {
           const average = sum / bufferLength;
           console.log("Average volume:", average);
           
-          if (average > 50) {
+          if (average > 30) {
             blowOutCandles();
             //blowTriggerCount++;
           } else {
