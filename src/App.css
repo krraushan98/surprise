@@ -1,38 +1,210 @@
-.App {
+/* App.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&family=Great+Vibes&display=swap');
+
+body { margin: 0; overflow: hidden; background: #000; font-family: 'Poppins', sans-serif; }
+
+/* SHARED SCREEN CONTAINER */
+.screen {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100vh;
+  display: flex; flex-direction: column; align-items: center; overflow: hidden;
+}
+
+/* STAGE 1: COUNTDOWN */
+.countdown-screen {
+  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
+  justify-content: center; color: white;
+}
+@keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+.timer { font-size: 3.5rem; font-weight: bold; }
+
+/* STAGE 2: CAKE SCREEN */
+.cake-screen {
+  background: radial-gradient(circle, #ffeaa7 0%, #fab1a0 100%);
+  position: relative;
+}
+
+/* --- IMAGE ASSETS --- */
+.ribbon-banner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%; 
+  height: 250px; 
+  /* background-image: url('./ribbons.png');  */
+  background-repeat: repeat-x; 
+  background-size: contain; 
+  background-position: top center; 
+  z-index: 0;
+}
+
+/* @media screen and (max-width: 768px) {
+  .ribbon-banner {
+    max-height: 500px; 
+  }
+}
+
+@media screen and (min-width: 769px) {
+  .ribbon-banner {
+    width: 100%;
+    max-height: 500px; 
+  }
+} */
+
+.fixed-balloon {
+  position: absolute;
+  width: 120px; /* Adjust size of balloons */
+  height: auto;
+  z-index: 2;
+  animation: float 4s ease-in-out infinite;
+}
+
+/* Floating animation for balloons */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+}
+
+/* --- CAKE & CANDLES CONTAINER --- */
+.cake-container {
+  position: absolute;
+  bottom: 20px; /* Spacing from bottom */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 450px; /* Controls the size of the whole cake */
+  z-index: 10;
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
+/* @media screen and (max-width: 768px) {
+  
+} */
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.cake-image {
+  width: 100%;
+  display: block;
+  filter: drop-shadow(0 10px 10px rgba(0,0,0,0.3));
 }
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+/* Position candles ON TOP of the cake image */
+.candles-container-on-cake {
+  position: absolute;
+  top: 137px; 
+  left: 0;
+  width: 100%;
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  gap: 15px;
+  z-index: 15;
 }
 
-.App-link {
-  color: #61dafb;
+/* Updated Candle Body - Thicker and cuter */
+.candle {
+  width: 8px; /* Increased from 5px to 12px for better visibility */
+  height: 50px;
+  /* Cleaner purple/white stripes */
+  background: repeating-linear-gradient(
+    45deg,
+    #cf3cab,
+    #ce45bc 5px,
+    #ffffff 5px,
+    #ffffff 10px
+  );
+  position: relative;
+  border-radius: 3px;
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* Updated Flame - Teardrop shape with gradient */
+.flame {
+  width: 12px; /* Slightly wider than the candle */
+  height: 22px; /* Taller flame */
+  
+  /* Gradient from yellow to orange */
+  background: linear-gradient(to bottom, #fff700 0%, #ff9900 100%);
+  
+  /* The "Teardrop" shape */
+  border-radius: 50% 50% 35% 35% / 60% 60% 40% 40%;
+  
+  position: absolute;
+  top: -28px; 
+  left: 50%; 
+  
+  /* Glow effect */
+  box-shadow: 0 0 10px rgba(255, 165, 0, 0.6), 0 0 20px rgba(255, 215, 0, 0.4);
+  
+  transition: opacity 0.5s;
+  
+  /* Important: transform-origin helps it flicker from the bottom */
+  transform-origin: center bottom;
+  animation: flicker 0.15s infinite alternate ease-in-out;
 }
+
+/* THE WICK (The little string) - This adds the detail */
+.flame::before {
+  content: '';
+  position: absolute;
+  bottom: -6px; /* Stick out of the bottom of the flame */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 8px;
+  background: #333; /* Dark gray/black string */
+  z-index: -1;
+}
+
+.flame.out {
+  opacity: 0;
+  animation: none; /* <--- ADD THIS. This stops the flicker so opacity: 0 can work */
+  transition: opacity 0.5s; /* Smooth fade out */
+}
+
+/* Your Keyframes (No changes needed here if you add animation: none above) */
+@keyframes flicker { 
+  0% { 
+    transform: translateX(-50%) scale(1); 
+    opacity: 1;
+  } 
+  100% { 
+    transform: translateX(-50%) scale(1.1); 
+    opacity: 0.9;
+  } 
+}
+/* TEXT */
+.banner-text {
+  font-family: 'Great Vibes', cursive;
+  font-size: 3.5rem;
+  color: #d63031;
+  margin-top: 8rem; /* Push down below ribbons */
+  z-index: 10;
+  text-shadow: 2px 2px 0px white;
+  animation: pulse 2s infinite;
+  text-align: center;
+}
+
+/* STAGE 3: GIFT BOX */
+.gift-screen {
+  background: #fab1a0;
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+}
+.gift-box {
+  font-size: 100px; cursor: pointer; margin-bottom: 20px;
+  filter: drop-shadow(0 10px 15px rgba(0,0,0,0.2));
+}
+
+/* STAGE 4: GALLERY */
+.gallery-screen { background: #dfe6e9; display: flex; align-items: center; padding: 0; }
+.scroll-container {
+  display: flex; overflow-x: auto; scroll-snap-type: x mandatory;
+  width: 100%; height: 80vh; align-items: center; gap: 20px; padding: 0 20px;
+  scrollbar-width: none;
+}
+.scroll-container::-webkit-scrollbar { display: none; }
+.card {
+  flex: 0 0 85%; max-width: 400px; height: 90%;
+  scroll-snap-align: center; background: white; border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.card-img { flex: 2; width: 100%; height: 60%; object-fit: cover; }
+.card-msg { flex: 1; padding: 20px; text-align: center; display: flex; align-items: center; justify-content: center; color: #636e72; font-size: 1.1rem; }
