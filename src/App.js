@@ -69,6 +69,55 @@ function App() {
     };
   }, [stage]);
 
+  // const startListening = async () => {
+  //   try {
+  //     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  //     audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
+  //     analyserRef.current = audioContextRef.current.createAnalyser();
+  //     microphoneRef.current = audioContextRef.current.createMediaStreamSource(stream);
+  //     microphoneRef.current.connect(analyserRef.current);
+  //     analyserRef.current.fftSize = 256;
+
+  //     const bufferLength = analyserRef.current.frequencyBinCount;
+  //     const dataArray = new Uint8Array(bufferLength);
+      
+  //     // Variable to track how long the sound has been loud
+  //     let blowTriggerCount = 0; 
+
+  //     const checkVolume = () => {
+  //       if (candlesBlown) return;
+        
+  //       if (analyserRef.current) {
+  //         analyserRef.current.getByteFrequencyData(dataArray);
+  //         let sum = 0;
+  //         for (let i = 0; i < bufferLength; i++) sum += dataArray[i];
+  //         const average = sum / bufferLength;
+  //         console.log("Average volume:", average);
+          
+  //         if (average > 30) {
+  //           blowOutCandles();
+  //           //blowTriggerCount++;
+  //         } else {
+  //           blowTriggerCount = 0; // Reset if sound stops
+  //         }
+
+  //         // 2. SUSTAIN CHECK: Require sound to be loud for 5 consecutive frames
+  //         // This prevents a single "click" or noise spike from blowing it out
+  //         if (blowTriggerCount > 1) {
+  //           blowOutCandles();
+  //         }
+  //       }
+        
+  //       requestAnimationFrame(checkVolume);
+  //     };
+      
+  //     checkVolume();
+  //   } catch (err) { 
+  //     console.error("Mic error:", err); 
+  //     setMicError(true); 
+  //   }
+  // };
+
   const startListening = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -76,48 +125,67 @@ function App() {
       analyserRef.current = audioContextRef.current.createAnalyser();
       microphoneRef.current = audioContextRef.current.createMediaStreamSource(stream);
       microphoneRef.current.connect(analyserRef.current);
-      analyserRef.current.fftSize = 256;
+
+      // Better settings for detecting blowing
+      analyserRef.current.fftSize = 2048; // Higher resolution
+      analyserRef.current.smoothingTimeConstant = 0.3; // Less smoothing for quick response
 
       const bufferLength = analyserRef.current.frequencyBinCount;
       const dataArray = new Uint8Array(bufferLength);
-      
-      // Variable to track how long the sound has been loud
-      let blowTriggerCount = 0; 
+
+      let blowTriggerCount = 0;
+      const BLOW_THRESHOLD = 40; // Adjust based on testing
+      const REQUIRED_FRAMES = 3; // Must sustain for 3 frames (~50ms)
+      const LOW_FREQ_RANGE = 10; // Check first 10 frequency bins (low frequencies)
 
       const checkVolume = () => {
         if (candlesBlown) return;
-        
+
         if (analyserRef.current) {
           analyserRef.current.getByteFrequencyData(dataArray);
-          let sum = 0;
-          for (let i = 0; i < bufferLength; i++) sum += dataArray[i];
-          const average = sum / bufferLength;
-          console.log("Average volume:", average);
-          
-          if (average > 30) {
-            blowOutCandles();
-            //blowTriggerCount++;
+
+          // Focus on LOW frequencies - blowing creates low-frequency noise
+          let lowFreqSum = 0;
+          for (let i = 0; i < LOW_FREQ_RANGE; i++) {
+            lowFreqSum += dataArray[i];
+          }
+          const lowFreqAverage = lowFreqSum / LOW_FREQ_RANGE;
+
+          // Also check overall energy for sudden spikes
+          let totalSum = 0;
+          for (let i = 0; i < bufferLength; i++) {
+            totalSum += dataArray[i];
+          }
+          const totalAverage = totalSum / bufferLength;
+
+          console.log("Low freq:", lowFreqAverage.toFixed(2), "Total:", totalAverage.toFixed(2));
+
+          // Detect blow: strong low frequencies OR sudden spike in total energy
+          if (lowFreqAverage > BLOW_THRESHOLD || totalAverage > 35) {
+            blowTriggerCount++;
+            console.log("Blow detected! Count:", blowTriggerCount);
           } else {
-            blowTriggerCount = 0; // Reset if sound stops
+            blowTriggerCount = 0;
           }
 
-          // 2. SUSTAIN CHECK: Require sound to be loud for 5 consecutive frames
-          // This prevents a single "click" or noise spike from blowing it out
-          if (blowTriggerCount > 1) {
+          // Trigger candle blow out after sustained detection
+          if (blowTriggerCount >= REQUIRED_FRAMES) {
+            console.log("🎂 Candles blown out!");
             blowOutCandles();
+            blowTriggerCount = 0; // Reset after triggering
           }
         }
-        
+
         requestAnimationFrame(checkVolume);
       };
-      
+
       checkVolume();
-    } catch (err) { 
-      console.error("Mic error:", err); 
-      setMicError(true); 
+    } catch (err) {
+      console.error("Mic error:", err);
+      setMicError(true);
     }
   };
-
+  
   const blowOutCandles = () => {
     if (candlesBlown) return;
     setCandlesBlown(true);
