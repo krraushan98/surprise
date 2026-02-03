@@ -193,7 +193,11 @@ body { margin: 0; overflow: hidden; background: #000; font-family: 'Poppins', sa
 }
 
 /* STAGE 4: GALLERY */
-.gallery-screen { background: #dfe6e9; display: flex; align-items: center; padding: 0; }
+.gallery-screen { 
+  display: flex; align-items: center; padding: 0; 
+
+}
+
 .scroll-container {
   display: flex; overflow-x: auto; scroll-snap-type: x mandatory;
   width: 100%; height: 80vh; align-items: center; gap: 20px; padding: 0 20px;
@@ -208,3 +212,187 @@ body { margin: 0; overflow: hidden; background: #000; font-family: 'Poppins', sa
 }
 .card-img { flex: 2; width: 100%; height: 60%; object-fit: cover; }
 .card-msg { flex: 1; padding: 20px; text-align: center; display: flex; align-items: center; justify-content: center; color: #636e72; font-size: 1.1rem; }
+
+/* --- STAGE 4: VERTICAL HANGING GALLERY --- */
+.gallery-screen { 
+ background-size: cover;      /* Covers whole screen */
+  background-position: center; /* Centers the image */
+  background-attachment: fixed; /* Keeps bg still while scrolling */
+  background-repeat: no-repeat;
+  display: block; 
+  overflow-y: auto; 
+  overflow-x: hidden;
+  position: relative;
+  height: 100vh;
+  padding: 0;
+}
+
+/* Container to center everything */
+.gallery-container {
+  position: relative;
+  width: 100%;
+  max-width: 600px; /* Limits width on desktop for a focused look */
+  margin: 0 auto;
+  padding-top: 50px;
+  padding-bottom: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* The SVG Thread Background */
+.thread-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0; /* Behind the photos */
+  pointer-events: none;
+}
+
+/* The Photo Card (Polaroid Style) */
+.polaroid-card {
+  position: relative;
+  background: white;
+  padding: 15px 15px 40px 15px; /* Extra bottom padding for "Polaroid" look */
+  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+  width: 280px;
+  z-index: 1;
+  border-radius: 2px;
+  margin-bottom: 100px; /* Space between cards */
+  /* We will use inline styles in JS to set distinct margins/rotations */
+}
+
+.polaroid-card:nth-of-type(even) {
+  margin-left: -150px;
+}
+.polaroid-card:nth-of-type(odd) {
+  margin-left: 150px;
+}
+
+.polaroid-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border: 1px solid #eee;
+}
+
+.polaroid-caption {
+  font-family: 'Great Vibes', cursive;
+  color: #555;
+  font-size: 1.5rem;
+  text-align: center;
+  margin-top: 15px;
+}
+
+/* App.css */
+
+/* --- STAGE 4 UPDATES --- */
+
+/* Define the swinging animation */
+@keyframes swing {
+  0% { transform: rotate(3deg); }
+  100% { transform: rotate(-3deg); }
+}
+
+/* Update the Pin to use an image */
+.pin {
+  position: absolute;
+  /* Adjust top/left to center your specific pin image on the thread/card top */
+  top: -25px; 
+  left: 50%;
+  transform: translateX(-50%);
+  /* Set the size of your pin image */
+  width: 40px; 
+  height: 40px;
+  /* Path to your image in the public folder */
+  /* background-image: url('./pin.png'); */
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  z-index: 10;
+  /* Remove old CSS circle styles */
+  background-color: transparent;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+
+
+/* Ensure the letter container also has the pin correctly */
+.letter-container .pin {
+    top: -25px; /* Adjust as needed for the letter */
+}
+
+/* --- THE FINAL LETTER --- */
+.letter-container {
+  position: relative;
+  margin-top: 80px;
+  width: 320px;
+  background: #fffdf0; /* Creamy paper color */
+  padding: 30px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  border: 1px solid #e0e0e0;
+  z-index: 1;
+  /* Paper texture effect */
+  background-image: linear-gradient(#eee .1rem, transparent .1rem);
+  background-size: 100% 1.5rem;
+  line-height: 1.5rem;
+}
+
+.letter-title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+  color: #333;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-align: center;
+}
+
+.letter-body {
+  font-family: 'Great Vibes', cursive; /* Handwritten font */
+  font-size: 1.8rem;
+  color: #444;
+  text-align: left;
+}
+
+.signature {
+  margin-top: 20px;
+  text-align: right;
+  font-family: 'Poppins', sans-serif;
+  font-weight: bold;
+  color: #d63031;
+}
+
+@media screen and (max-width: 768px) {
+  
+  .gallery-container {
+    max-width: 100%; /* Use full width */
+    overflow-x: hidden; /* Prevent horizontal scroll */
+  }
+
+  .polaroid-card {
+    width: 80%; /* Cards take up 80% of screen width */
+    margin-bottom: 80px;
+  }
+
+  .polaroid-card:nth-of-type(even) {
+  margin-left: -45px;
+}
+.polaroid-card:nth-of-type(odd) {
+  margin-left: 45px;
+}
+
+  /* Adjust letter size for mobile */
+  .letter-container {
+    width: 85%;
+    padding: 20px;
+  }
+  
+  .letter-body {
+    font-size: 1.4rem; /* Smaller text for mobile */
+  }
+}
