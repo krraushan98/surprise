@@ -25,9 +25,12 @@ function App() {
   const [candlesBlown, setCandlesBlown] = useState(false);
   const [micError, setMicError] = useState(false);
 
+  // Refs for audio and microphone
   const audioContextRef = useRef(null);
   const analyserRef = useRef(null);
   const microphoneRef = useRef(null);
+  const streamRef = useRef(null);
+  const animationFrameRef = useRef(null);
   const songRef = useRef(new Audio(process.env.PUBLIC_URL + '/song.mp3'));
   const popRef = useRef(new Audio(process.env.PUBLIC_URL + '/pop.mp3'));
 
@@ -44,9 +47,6 @@ function App() {
     const timer = setInterval(() => {
       const t = calculateTimeLeft();
       setTimeLeft(t);
-      
-      // Note: We do NOT auto-switch to 'cake' here anymore.
-      // We just let timeLeft hit 0, which triggers the button to appear in the JSX below.
     }, 1000);
 
     return () => clearInterval(timer);
@@ -58,72 +58,28 @@ function App() {
       songRef.current.loop = true;
       songRef.current.volume = 0.5;
       
-      // This play() is now safe because it happens after the user clicks the "Open" button
+      // Play the song (safe because user clicked to enter this stage)
       songRef.current.play().catch(e => console.log("Audio play failed:", e));
 
-      setTimeout(() =>startListening(), 1000);
+      // Start listening to microphone after a short delay
+      setTimeout(() => startListening(), 1000);
+    } else {
+      // Stop listening when leaving cake stage
+      stopListening();
+      songRef.current.pause();
     }
     
     return () => {
       songRef.current.pause();
-      if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
-        audioContextRef.current.close();
-      }
+      stopListening();
     };
   }, [stage]);
-
-  // const startListening = async () => {
-  //   try {
-  //     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-  //     audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
-  //     analyserRef.current = audioContextRef.current.createAnalyser();
-  //     microphoneRef.current = audioContextRef.current.createMediaStreamSource(stream);
-  //     microphoneRef.current.connect(analyserRef.current);
-  //     analyserRef.current.fftSize = 256;
-
-  //     const bufferLength = analyserRef.current.frequencyBinCount;
-  //     const dataArray = new Uint8Array(bufferLength);
-      
-  //     // Variable to track how long the sound has been loud
-  //     let blowTriggerCount = 0; 
-
-  //     const checkVolume = () => {
-  //       if (candlesBlown) return;
-        
-  //       if (analyserRef.current) {
-  //         analyserRef.current.getByteFrequencyData(dataArray);
-  //         let sum = 0;
-  //         for (let i = 0; i < bufferLength; i++) sum += dataArray[i];
-  //         const average = sum / bufferLength;
-  //         console.log("Average volume:", average);
-          
-  //         if (average > 30) {
-  //           blowOutCandles();
-  //           //blowTriggerCount++;
-  //         } else {
-  //           blowTriggerCount = 0; // Reset if sound stops
-  //         }
-
-  //         // 2. SUSTAIN CHECK: Require sound to be loud for 5 consecutive frames
-  //         // This prevents a single "click" or noise spike from blowing it out
-  //         if (blowTriggerCount > 1) {
-  //           blowOutCandles();
-  //         }
-  //       }
-        
-  //       requestAnimationFrame(checkVolume);
-  //     };
-      
-  //     checkVolume();
-  //   } catch (err) { 
-  //     console.error("Mic error:", err); 
-  //     setMicError(true); 
-  //   }
-  // };
 
   const startListening = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      streamRef.current = stream; // Store the stream so we can stop it later
+      
       audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
       analyserRef.current = audioContextRef.current.createAnalyser();
       microphoneRef.current = audioContextRef.current.createMediaStreamSource(stream);
@@ -142,7 +98,11 @@ function App() {
       const LOW_FREQ_RANGE = 10; // Check first 10 frequency bins (low frequencies)
 
       const checkVolume = () => {
-        if (candlesBlown) return;
+        // Stop if candles are already blown
+        if (candlesBlown) {
+          stopListening();
+          return;
+        }
 
         if (analyserRef.current) {
           analyserRef.current.getByteFrequencyData(dataArray);
@@ -175,12 +135,12 @@ function App() {
           if (blowTriggerCount >= REQUIRED_FRAMES) {
             console.log("🎂 Candles blown out!");
             blowOutCandles();
-            stopListening();
-            blowTriggerCount = 0; // Reset after triggering
+            return; // Stop the loop
           }
         }
 
-        requestAnimationFrame(checkVolume);
+        // Store the animation frame ID so we can cancel it later
+        animationFrameRef.current = requestAnimationFrame(checkVolume);
       };
 
       checkVolume();
@@ -193,7 +153,14 @@ function App() {
   const blowOutCandles = () => {
     if (candlesBlown) return;
     setCandlesBlown(true);
+    
+    // Stop listening immediately
+    stopListening();
+    
+    // Play pop sound
     popRef.current.play().catch(() => { });
+    
+    // Transition to gift stage after 3 seconds
     setTimeout(() => setStage('gift'), 3000);
   };
 
@@ -211,7 +178,7 @@ function App() {
     }
 
     // Close audio context
-    if (audioContextRef.current) {
+    if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
       audioContextRef.current.close();
       audioContextRef.current = null;
     }
@@ -227,10 +194,6 @@ function App() {
 
     analyserRef.current = null;
   };
-
-// Make sure to add streamRef at the top with other refs
-  const streamRef = useRef(null);
-  const animationFrameRef = useRef(null);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -249,9 +212,7 @@ function App() {
 
   const handleOpenClick = () => {
     setStage('cake');
-    songRef.current.play().catch(e => console.log(e)); 
   };
-
 
   const generateThreadPath = (count) => {
     // Each card is roughly 400px apart vertically
@@ -369,33 +330,17 @@ function App() {
           </motion.div>
         )}
 
-        {/* STAGE 4: THE GALLERY */}
-        {/* {stage === 'gallery' && (
-          <motion.div key="gallery" className="screen gallery-screen"
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-          >
-            <div className="scroll-container">
-              {GALLERY_DATA.map((card, index) => (
-                <div className="card" key={index}>
-                  <img src={card.img} alt="memory" className="card-img" />
-                  <div className="card-msg">{card.msg}</div>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        )} */}
-
         {/* STAGE 4: NEW VERTICAL GALLERY */}
         {stage === 'gallery' && (
           <motion.div key="gallery" className="screen gallery-screen" 
-          style={{backgroundImage : `url('${process.env.PUBLIC_URL}/gallerybackground.png')`}}
+            style={{backgroundImage : `url('${process.env.PUBLIC_URL}/gallerybackground.png')`}}
             initial={{ opacity: 0 }} animate={{ opacity: 1 }}
           >
             <div className="gallery-container">
               
               {/* THE THREAD (SVG) */}
               <svg className="thread-svg" viewBox={`0 0 100 ${GALLERY_DATA.length * 400 + 400}`} preserveAspectRatio="none">
-                 <path d={generateThreadPath(GALLERY_DATA.length)} stroke="#8d6e63" strokeWidth="0.5" fill="none" />
+                <path d={generateThreadPath(GALLERY_DATA.length)} stroke="#8d6e63" strokeWidth="0.5" fill="none" />
               </svg>
 
               {GALLERY_DATA.map((card, index) => (
@@ -427,9 +372,6 @@ function App() {
                   style={{
                     // CRITICAL: Set pivot point to top center for hanging effect
                     transformOrigin: 'top center',
-                    // Stagger items Left and Right roughly
-                    // marginLeft: index % 2 === 0 ? '-130px' : '130px',
-                    // marginBottom: '100px',
                     zIndex: 5
                   }}
                 >
@@ -452,7 +394,7 @@ function App() {
                 <div className="pin" style={{ backgroundImage: `url('${process.env.PUBLIC_URL}/pinimg.png')` }}></div>
                 <div className="letter-title">{LETTER_CONTENT.title}</div>
                 <div className="letter-body">
-                   {LETTER_CONTENT.body}
+                  {LETTER_CONTENT.body}
                 </div>
                 <div className="signature">{LETTER_CONTENT.sender}</div>
               </motion.div>
