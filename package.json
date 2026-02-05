@@ -9,10 +9,10 @@
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^13.5.0",
     "framer-motion": "^12.29.2",
+    "lucide-react": "^0.563.0",
     "react": "^19.2.4",
     "react-confetti": "^6.4.0",
     "react-dom": "^19.2.4",
-    "react-scripts": "5.0.1",
     "react-use": "^17.6.0",
     "web-vitals": "^2.1.4"
   },
@@ -43,6 +43,7 @@
     ]
   },
   "devDependencies": {
-    "gh-pages": "^6.3.0"
+    "gh-pages": "^6.3.0",
+    "react-scripts": "^5.0.1"
   }
 }

@@ -1,12 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Confetti from 'react-confetti';
 import { motion, AnimatePresence } from 'framer-motion';
+import {  Sparkles } from 'lucide-react';
 import './App.css';
 
 
-const TARGET_DATE = "2026-02-01T15:57:00"; 
+const TARGET_DATE = "2026-02-05T15:57:00"; 
 
 const GALLERY_DATA = [
+  { img: "couple.png", msg: "I remember this day like it was yesterday." },
+  { img: "couple.png", msg: "You always know how to make me laugh." },
+  { img: "couple.png", msg: "Simply the most beautiful person I know." },
+  { img: "couple.png", msg: "I love you more than words can say. Happy Birthday! ❤️" },
   { img: "couple.png", msg: "I remember this day like it was yesterday." },
   { img: "couple.png", msg: "You always know how to make me laugh." },
   { img: "couple.png", msg: "Simply the most beautiful person I know." },
@@ -215,61 +220,85 @@ function App() {
   };
 
   const generateThreadPath = (count) => {
-    // Each card is roughly 400px apart vertically
-    const stepY = 400; 
+
+    const stepY = 450;
     let path = `M 50 0 `; // Start top center (assuming viewbox 0-100 width)
-    
-    // Create a curve for each card + 1 for the letter
+
     for (let i = 0; i <= count; i++) {
       const yStart = i * stepY;
       const yEnd = (i + 1) * stepY;
-      
-      // Control points for Bezier Curve (creates the S shape)
-      // Alternates left and right
-      const controlX = i % 2 === 0 ? 10 : 90; 
-      
-      // Smooth S-Curve
+      const controlX = i % 2 === 0 ? 10 : 90;
       path += `Q ${controlX} ${yStart + stepY / 2}, 50 ${yEnd} `;
+
     }
+
     return path;
+
+  };
+
+  const getBackgroundImage = () => {
+    if (stage === 'gallery') return `url('${process.env.PUBLIC_URL}/gallerybackground.png')`;
+    // Default background for other stages (optional, or use color)
+    return 'none'; 
   };
 
   return (
     <div className="App">
+
+      <div 
+        className="global-background" 
+        style={{ backgroundImage: getBackgroundImage() }}
+      />
+
       {candlesBlown && <Confetti numberOfPieces={300} recycle={stage !== 'gallery'} />}
 
-      <AnimatePresence mode="wait">
+      <AnimatePresence >
 
         {/* STAGE 1: COUNTDOWN */}
-        {stage === 'countdown' && (
-          <motion.div key="count" className="screen countdown-screen" exit={{ opacity: 0 }}>
-            
-            {/* LOGIC: If Time > 0, Show Timer. Else, Show Button */}
-            {timeLeft > 0 ? (
-              <>
-                <h1 style={{ marginBottom: 0 }}>Waiting for the moment...</h1>
-                <div className="timer">{formatTime(timeLeft)}</div>
-              </>
-            ) : (
-              /* THIS BUTTON ONLY APPEARS WHEN timeLeft IS 0 */
-              <motion.button 
-                initial={{ scale: 0 }} 
-                animate={{ scale: 1 }}
-                whileHover={{ scale: 1.1 }}
-                onClick={handleOpenClick}
-                className="enter-btn"
-                style={{
-                  padding: '15px 40px', fontSize: '24px', 
-                  background: '#ff4081', color: 'white', border: 'none', 
-                  borderRadius: '50px', cursor: 'pointer', boxShadow: '0 5px 15px rgba(255,64,129,0.4)'
-                }}
-              >
-                It's Time! Open Surprise 🎁
-              </motion.button>
-            )}
+       {stage === 'countdown' && (
+          <motion.div 
+            key="count" 
+            className="screen countdown-screen" 
+            exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.5 } }}
+          >
+            <div className="countdown-container">
+              
+              {/* HEADER: Sparkles & Title */}
+              <div className="text-center">
+                {/* The Lucide Icon with Pulse Animation */}
+                <Sparkles className="sparkle-icon" />
+                
+                <h1 className="countdown-title">Something Special is Coming...</h1>
+                <p className="countdown-subtitle">Get Ready! 🎉</p>
+              </div>
 
+              {/* TIMER: Bouncing & Glowing */}
+              <div className="timer-wrapper">
+                {timeLeft > 0 ? (
+                  <>
+                    {/* Layer 1: Blurred Glow */}
+                    
+                    {/* Layer 2: Sharp Text */}
+                    <div className="timer-text main-text">
+                      {formatTime(timeLeft)}
+                    </div>
+                  </>
+                ) : (
+                  <motion.button 
+                    initial={{ scale: 0 }} 
+                    animate={{ scale: 1 }}
+                    whileHover={{ scale: 1.1 }}
+                    onClick={handleOpenClick}
+                    className="enter-btn"
+                  >
+                    It's Time! Open Surprise 🎁
+                  </motion.button>
+                )}
+              </div>
+            </div>
           </motion.div>
         )}
+
 
         {/* STAGE 2: THE CAKE PARTY */}
         {stage === 'cake' && (
@@ -339,8 +368,10 @@ function App() {
             <div className="gallery-container">
               
               {/* THE THREAD (SVG) */}
-              <svg className="thread-svg" viewBox={`0 0 100 ${GALLERY_DATA.length * 400 + 400}`} preserveAspectRatio="none">
-                <path d={generateThreadPath(GALLERY_DATA.length)} stroke="#8d6e63" strokeWidth="0.5" fill="none" />
+               <svg className="thread-svg" viewBox={`0 0 100 ${GALLERY_DATA.length * 400 + 400}`} preserveAspectRatio="none">
+
+                 <path d={generateThreadPath(GALLERY_DATA.length)} stroke="#8d6e63" strokeWidth="0.5" fill="none" />
+
               </svg>
 
               {GALLERY_DATA.map((card, index) => (
@@ -356,7 +387,7 @@ function App() {
                     // Keyframes for swinging: rotate back and forth slightly
                     rotate: index % 2 === 0 ? [2, -2] : [-2, 2]
                   }}
-                  viewport={{ once: true, amount: 0.5 }}
+                  viewport={{ once: true, amount: 0.3 }}
                   transition={{
                     opacity: { duration: 0.8, delay: index * 0.2 },
                     y: { duration: 0.8, delay: index * 0.2 },

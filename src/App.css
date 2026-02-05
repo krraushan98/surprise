@@ -1,7 +1,7 @@
 /* App.css */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&family=Great+Vibes&display=swap');
 
-body { margin: 0; overflow: hidden; background: #000; font-family: 'Poppins', sans-serif; }
+body { margin: 0; overflow: hidden; background-color: #fff5f8; font-family: 'Poppins', sans-serif; overscroll-behavior: none;}
 
 /* SHARED SCREEN CONTAINER */
 .screen {
@@ -9,15 +9,205 @@ body { margin: 0; overflow: hidden; background: #000; font-family: 'Poppins', sa
   display: flex; flex-direction: column; align-items: center; overflow: hidden;
 }
 
+.App {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh; /* Modern mobile unit for dynamic viewport height */
+  overflow: hidden; /* The App container itself never scrolls */
+}
+
+.global-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  background-size: cover;
+  background-position: center;
+  transition: background-image 1s ease-in-out; /* Smooth transition when BG changes */
+}
+
 /* STAGE 1: COUNTDOWN */
+
+/* --- COUNTDOWN SCREEN --- */
 .countdown-screen {
+  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+@keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+.timer { font-size: 3.5rem; font-weight: bold; }
+
+.text-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centers the Sparkle icon */
+  text-align: center;  /* Centers the Text */
+  width: 100%;
+}
+
+.countdown-container {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem; /* Space between Title and Timer */
+  align-items: center;
+  z-index: 2;
+}
+
+/* --- LUCIDE ICON & TEXT --- */
+.sparkle-icon {
+  width: 4rem;  /* 64px */
+  height: 4rem;
+  margin-bottom: 1rem;
+  /* Replicating animate-pulse */
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; 
+}
+
+.countdown-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin: 0;
+  text-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.countdown-subtitle {
+  font-size: 1.5rem;
+  opacity: 0.9;
+  margin-top: 10px;
+}
+
+/* --- BOUNCING TIMER (Dual Layer) --- */
+.timer-wrapper {
+  position: relative;
+  height: 120px; /* Prevent layout jumping */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.timer-text {
+  font-size: 4rem; /* Adjust based on mobile/desktop preference */
+  font-weight: 900;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* Top Layer: Sharp White Text */
+.main-text {
+  position: relative;
+  z-index: 10;
+  color: white;
+  animation: bounce 1s infinite;
+}
+
+/* Bottom Layer: Blurry Glow */
+.glow-effect {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  color: #fbcfe8; /* Light Pink */
+  filter: blur(12px);
+  opacity: 0.8;
+  animation: bounce 1s infinite; /* Syncs perfectly with main text */
+}
+
+/* App.css */
+/* App.css */
+
+/* --- SLEEK ENTER BUTTON STYLES --- */
+.enter-btn {
+  margin-top: 1.5rem;
+  padding: 20px 38px;  /* Reduced padding (was 18px 40px) */
+  font-size: 1.7rem;   /* Smaller, cleaner font size (was 1.5rem) */
+  font-weight: 700;    /* Slightly lighter bold */
+  color: #ffffff;
+  
+  /* Modern Gradient */
+  background: linear-gradient(135deg, #ff4081, #d668e2);
+  
+  /* REMOVED the white border */
+  border: none;        
+  
+  border-radius: 50px;
+  cursor: pointer;
+  
+  /* Softer shadow for a lighter feel */
+  box-shadow: 0 4px 15px rgba(255, 64, 129, 0.3);
+  
+  transition: all 0.2s ease;
+  position: relative;
+  z-index: 50;
+  
+  /* Prevent text selection */
+  user-select: none;
+}
+
+.enter-btn:hover {
+  transform: translateY(-2px); /* Subtle lift instead of scale */
+  box-shadow: 0 6px 20px rgba(255, 64, 129, 0.5);
+  filter: brightness(1.1);
+}
+
+.enter-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 10px rgba(255, 64, 129, 0.3);
+}
+
+/* Make it even smaller on mobile to fix "bulky" look */
+@media (max-width: 768px) {
+  .enter-btn {
+    padding: 18px 35px;
+    font-size: 1.3rem; /* Standard text size for mobile */
+    margin-top: 1rem;
+  }
+}
+
+/* --- ANIMATIONS --- */
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .5; }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(-25%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
+/* Mobile Responsive Adjustments */
+@media (max-width: 768px) {
+  .countdown-title { font-size: 1.8rem; }
+  .timer-text { font-size: 2.5rem; }
+}
+/* .countdown-screen {
   background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
   background-size: 400% 400%;
   animation: gradientBG 15s ease infinite;
   justify-content: center; color: white;
 }
 @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-.timer { font-size: 3.5rem; font-weight: bold; }
+.timer { font-size: 3.5rem; font-weight: bold; } */
 
 /* STAGE 2: CAKE SCREEN */
 .cake-screen {
@@ -198,6 +388,15 @@ body { margin: 0; overflow: hidden; background: #000; font-family: 'Poppins', sa
 
 }
 
+.gallery-container {
+  position: relative;
+  width: 100%;
+  min-height: 100%;
+  padding-top: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 .scroll-container {
   display: flex; overflow-x: auto; scroll-snap-type: x mandatory;
   width: 100%; height: 80vh; align-items: center; gap: 20px; padding: 0 20px;
@@ -260,7 +459,7 @@ body { margin: 0; overflow: hidden; background: #000; font-family: 'Poppins', sa
   width: 280px;
   z-index: 1;
   border-radius: 2px;
-  margin-bottom: 100px; /* Space between cards */
+  margin-bottom: 150px; /* Space between cards */
   /* We will use inline styles in JS to set distinct margins/rotations */
 }
 
