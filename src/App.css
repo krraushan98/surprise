@@ -1,9 +1,7 @@
-/* App.css */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&family=Great+Vibes&display=swap');
 
 body { margin: 0; overflow: hidden; background-color: #fff5f8; font-family: 'Poppins', sans-serif; overscroll-behavior: none;}
 
-/* SHARED SCREEN CONTAINER */
 .screen {
   position: absolute; top: 0; left: 0; width: 100%; height: 100vh;
   display: flex; flex-direction: column; align-items: center; overflow: hidden;
@@ -13,8 +11,8 @@ body { margin: 0; overflow: hidden; background-color: #fff5f8; font-family: 'Pop
   position: relative;
   width: 100%;
   height: 100vh;
-  height: 100dvh; /* Modern mobile unit for dynamic viewport height */
-  overflow: hidden; /* The App container itself never scrolls */
+  height: 100dvh; 
+  overflow: hidden; 
 }
 
 .global-background {
@@ -26,12 +24,9 @@ body { margin: 0; overflow: hidden; background-color: #fff5f8; font-family: 'Pop
   z-index: 0;
   background-size: cover;
   background-position: center;
-  transition: background-image 1s ease-in-out; /* Smooth transition when BG changes */
+  transition: background-image 1s ease-in-out; 
 }
 
-/* STAGE 1: COUNTDOWN */
-
-/* --- COUNTDOWN SCREEN --- */
 .countdown-screen {
   background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
   background-size: 400% 400%;
@@ -49,25 +44,23 @@ body { margin: 0; overflow: hidden; background-color: #fff5f8; font-family: 'Pop
 .text-center {
   display: flex;
   flex-direction: column;
-  align-items: center; /* Centers the Sparkle icon */
-  text-align: center;  /* Centers the Text */
+  align-items: center; 
+  text-align: center;  
   width: 100%;
 }
 
 .countdown-container {
   display: flex;
   flex-direction: column;
-  gap: 3rem; /* Space between Title and Timer */
+  gap: 3rem; 
   align-items: center;
   z-index: 2;
 }
 
-/* --- LUCIDE ICON & TEXT --- */
 .sparkle-icon {
-  width: 4rem;  /* 64px */
+  width: 4rem;  
   height: 4rem;
   margin-bottom: 1rem;
-  /* Replicating animate-pulse */
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; 
 }
 
@@ -84,23 +77,21 @@ body { margin: 0; overflow: hidden; background-color: #fff5f8; font-family: 'Pop
   margin-top: 10px;
 }
 
-/* --- BOUNCING TIMER (Dual Layer) --- */
 .timer-wrapper {
   position: relative;
-  height: 120px; /* Prevent layout jumping */
+  height: 120px;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .timer-text {
-  font-size: 4rem; /* Adjust based on mobile/desktop preference */
+  font-size: 4rem; 
   font-weight: 900;
   line-height: 1;
   white-space: nowrap;
 }
 
-/* Top Layer: Sharp White Text */
 .main-text {
   position: relative;
   z-index: 10;
@@ -108,7 +99,6 @@ body { margin: 0; overflow: hidden; background-color: #fff5f8; font-family: 'Pop
   animation: bounce 1s infinite;
 }
 
-/* Bottom Layer: Blurry Glow */
 .glow-effect {
   position: absolute;
   top: 0;
@@ -118,42 +108,28 @@ body { margin: 0; overflow: hidden; background-color: #fff5f8; font-family: 'Pop
   color: #fbcfe8; /* Light Pink */
   filter: blur(12px);
   opacity: 0.8;
-  animation: bounce 1s infinite; /* Syncs perfectly with main text */
+  animation: bounce 1s infinite;
 }
 
-/* App.css */
-/* App.css */
-
-/* --- SLEEK ENTER BUTTON STYLES --- */
 .enter-btn {
   margin-top: 1.5rem;
-  padding: 20px 38px;  /* Reduced padding (was 18px 40px) */
-  font-size: 1.7rem;   /* Smaller, cleaner font size (was 1.5rem) */
-  font-weight: 700;    /* Slightly lighter bold */
+  padding: 20px 38px;  
+  font-size: 1.7rem;  
+  font-weight: 700;    
   color: #ffffff;
-  
-  /* Modern Gradient */
   background: linear-gradient(135deg, #ff4081, #d668e2);
-  
-  /* REMOVED the white border */
   border: none;        
-  
   border-radius: 50px;
   cursor: pointer;
-  
-  /* Softer shadow for a lighter feel */
   box-shadow: 0 4px 15px rgba(255, 64, 129, 0.3);
-  
   transition: all 0.2s ease;
   position: relative;
   z-index: 50;
-  
-  /* Prevent text selection */
   user-select: none;
 }
 
 .enter-btn:hover {
-  transform: translateY(-2px); /* Subtle lift instead of scale */
+  transform: translateY(-2px); 
   box-shadow: 0 6px 20px rgba(255, 64, 129, 0.5);
   filter: brightness(1.1);
 }
@@ -163,20 +139,12 @@ body { margin: 0; overflow: hidden; background-color: #fff5f8; font-family: 'Pop
   box-shadow: 0 2px 10px rgba(255, 64, 129, 0.3);
 }
 
-/* Make it even smaller on mobile to fix "bulky" look */
 @media (max-width: 768px) {
   .enter-btn {
     padding: 18px 35px;
-    font-size: 1.3rem; /* Standard text size for mobile */
+    font-size: 1.3rem; 
     margin-top: 1rem;
   }
-}
-
-/* --- ANIMATIONS --- */
-@keyframes gradientBG {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
 }
 
 @keyframes pulse {
@@ -195,88 +163,57 @@ body { margin: 0; overflow: hidden; background-color: #fff5f8; font-family: 'Pop
   }
 }
 
-/* Mobile Responsive Adjustments */
 @media (max-width: 768px) {
   .countdown-title { font-size: 1.8rem; }
   .timer-text { font-size: 2.5rem; }
 }
-/* .countdown-screen {
-  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-  background-size: 400% 400%;
-  animation: gradientBG 15s ease infinite;
-  justify-content: center; color: white;
-}
-@keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-.timer { font-size: 3.5rem; font-weight: bold; } */
 
-/* STAGE 2: CAKE SCREEN */
 .cake-screen {
   background: radial-gradient(circle, #ffeaa7 0%, #fab1a0 100%);
   position: relative;
 }
 
-/* --- IMAGE ASSETS --- */
 .ribbon-banner {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%; 
   height: 250px; 
-  /* background-image: url('./ribbons.png');  */
   background-repeat: repeat-x; 
   background-size: contain; 
   background-position: top center; 
   z-index: 0;
 }
 
-/* @media screen and (max-width: 768px) {
-  .ribbon-banner {
-    max-height: 500px; 
-  }
-}
-
-@media screen and (min-width: 769px) {
-  .ribbon-banner {
-    width: 100%;
-    max-height: 500px; 
-  }
-} */
-
 .fixed-balloon {
   position: absolute;
-  width: 120px; /* Adjust size of balloons */
+  width: 120px; 
   height: auto;
   z-index: 2;
   animation: float 4s ease-in-out infinite;
 }
 
-/* Floating animation for balloons */
 @keyframes float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-15px); }
 }
 
-/* --- CAKE & CANDLES CONTAINER --- */
 .cake-container {
   position: absolute;
-  bottom: 20px; /* Spacing from bottom */
+  bottom: 20px; 
   left: 50%;
   transform: translateX(-50%);
-  width: 450px; /* Controls the size of the whole cake */
+  width: 450px; 
   z-index: 10;
   text-align: center;
 }
-
-/* @media screen and (max-width: 768px) {
-  
-} */
 
 .cake-image {
   width: 100%;
   display: block;
   filter: drop-shadow(0 10px 10px rgba(0,0,0,0.3));
 }
-/* Position candles ON TOP of the cake image */
+
 .candles-container-on-cake {
   position: absolute;
   top: 137px; 
@@ -288,11 +225,9 @@ body { margin: 0; overflow: hidden; background-color: #fff5f8; font-family: 'Pop
   z-index: 15;
 }
 
-/* Updated Candle Body - Thicker and cuter */
 .candle {
-  width: 8px; /* Increased from 5px to 12px for better visibility */
+  width: 8px; 
   height: 50px;
-  /* Cleaner purple/white stripes */
   background: repeating-linear-gradient(
     45deg,
     #cf3cab,
@@ -305,51 +240,38 @@ body { margin: 0; overflow: hidden; background-color: #fff5f8; font-family: 'Pop
   box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
 }
 
-/* Updated Flame - Teardrop shape with gradient */
 .flame {
-  width: 12px; /* Slightly wider than the candle */
-  height: 22px; /* Taller flame */
-  
-  /* Gradient from yellow to orange */
+  width: 12px; 
+  height: 22px; 
   background: linear-gradient(to bottom, #fff700 0%, #ff9900 100%);
-  
-  /* The "Teardrop" shape */
   border-radius: 50% 50% 35% 35% / 60% 60% 40% 40%;
-  
   position: absolute;
   top: -28px; 
   left: 50%; 
-  
-  /* Glow effect */
-  box-shadow: 0 0 10px rgba(255, 165, 0, 0.6), 0 0 20px rgba(255, 215, 0, 0.4);
-  
+  box-shadow: 0 0 10px rgba(255, 165, 0, 0.6), 0 0 20px rgba(255, 215, 0, 0.4); 
   transition: opacity 0.5s;
-  
-  /* Important: transform-origin helps it flicker from the bottom */
   transform-origin: center bottom;
   animation: flicker 0.15s infinite alternate ease-in-out;
 }
 
-/* THE WICK (The little string) - This adds the detail */
 .flame::before {
   content: '';
   position: absolute;
-  bottom: -6px; /* Stick out of the bottom of the flame */
+  bottom: -6px; 
   left: 50%;
   transform: translateX(-50%);
   width: 2px;
   height: 8px;
-  background: #333; /* Dark gray/black string */
+  background: #333; 
   z-index: -1;
 }
 
 .flame.out {
   opacity: 0;
-  animation: none; /* <--- ADD THIS. This stops the flicker so opacity: 0 can work */
-  transition: opacity 0.5s; /* Smooth fade out */
+  animation: none; 
+  transition: opacity 0.5s; 
 }
 
-/* Your Keyframes (No changes needed here if you add animation: none above) */
 @keyframes flicker { 
   0% { 
     transform: translateX(-50%) scale(1); 
@@ -360,19 +282,18 @@ body { margin: 0; overflow: hidden; background-color: #fff5f8; font-family: 'Pop
     opacity: 0.9;
   } 
 }
-/* TEXT */
+
 .banner-text {
   font-family: 'Great Vibes', cursive;
   font-size: 3.5rem;
   color: #d63031;
-  margin-top: 8rem; /* Push down below ribbons */
+  margin-top: 8rem; 
   z-index: 10;
   text-shadow: 2px 2px 0px white;
   animation: pulse 2s infinite;
   text-align: center;
 }
 
-/* STAGE 3: GIFT BOX */
 .gift-screen {
   background: #fab1a0;
   display: flex; flex-direction: column; justify-content: center; align-items: center;
@@ -382,41 +303,10 @@ body { margin: 0; overflow: hidden; background-color: #fff5f8; font-family: 'Pop
   filter: drop-shadow(0 10px 15px rgba(0,0,0,0.2));
 }
 
-/* STAGE 4: GALLERY */
 .gallery-screen { 
-  display: flex; align-items: center; padding: 0; 
-
-}
-
-.gallery-container {
-  position: relative;
-  width: 100%;
-  min-height: 100%;
-  padding-top: 50px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.scroll-container {
-  display: flex; overflow-x: auto; scroll-snap-type: x mandatory;
-  width: 100%; height: 80vh; align-items: center; gap: 20px; padding: 0 20px;
-  scrollbar-width: none;
-}
-.scroll-container::-webkit-scrollbar { display: none; }
-.card {
-  flex: 0 0 85%; max-width: 400px; height: 90%;
-  scroll-snap-align: center; background: white; border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-  display: flex; flex-direction: column; overflow: hidden;
-}
-.card-img { flex: 2; width: 100%; height: 60%; object-fit: cover; }
-.card-msg { flex: 1; padding: 20px; text-align: center; display: flex; align-items: center; justify-content: center; color: #636e72; font-size: 1.1rem; }
-
-/* --- STAGE 4: VERTICAL HANGING GALLERY --- */
-.gallery-screen { 
- background-size: cover;      /* Covers whole screen */
-  background-position: center; /* Centers the image */
-  background-attachment: fixed; /* Keeps bg still while scrolling */
+  background-size: cover;       
+  background-position: center; 
+  background-attachment: fixed; 
   background-repeat: no-repeat;
   display: block; 
   overflow-y: auto; 
@@ -424,13 +314,16 @@ body { margin: 0; overflow: hidden; background-color: #fff5f8; font-family: 'Pop
   position: relative;
   height: 100vh;
   padding: 0;
+  position: absolute; 
+  top: 0;
+  left: 0;
+  width: 100%;
 }
 
-/* Container to center everything */
 .gallery-container {
   position: relative;
   width: 100%;
-  max-width: 600px; /* Limits width on desktop for a focused look */
+  max-width: 600px; 
   margin: 0 auto;
   padding-top: 50px;
   padding-bottom: 100px;
@@ -439,28 +332,25 @@ body { margin: 0; overflow: hidden; background-color: #fff5f8; font-family: 'Pop
   align-items: center;
 }
 
-/* The SVG Thread Background */
 .thread-svg {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 0; /* Behind the photos */
+  z-index: 0; 
   pointer-events: none;
 }
 
-/* The Photo Card (Polaroid Style) */
 .polaroid-card {
   position: relative;
   background: white;
-  padding: 15px 15px 40px 15px; /* Extra bottom padding for "Polaroid" look */
+  padding: 15px 15px 40px 15px; 
   box-shadow: 0 10px 20px rgba(0,0,0,0.15);
   width: 280px;
   z-index: 1;
   border-radius: 2px;
-  margin-bottom: 150px; /* Space between cards */
-  /* We will use inline styles in JS to set distinct margins/rotations */
+  margin-bottom: 150px; 
 }
 
 .polaroid-card:nth-of-type(even) {
@@ -485,56 +375,40 @@ body { margin: 0; overflow: hidden; background-color: #fff5f8; font-family: 'Pop
   margin-top: 15px;
 }
 
-/* App.css */
-
-/* --- STAGE 4 UPDATES --- */
-
-/* Define the swinging animation */
 @keyframes swing {
   0% { transform: rotate(3deg); }
   100% { transform: rotate(-3deg); }
 }
 
-/* Update the Pin to use an image */
 .pin {
   position: absolute;
-  /* Adjust top/left to center your specific pin image on the thread/card top */
   top: -25px; 
   left: 50%;
   transform: translateX(-50%);
-  /* Set the size of your pin image */
   width: 40px; 
   height: 40px;
-  /* Path to your image in the public folder */
-  /* background-image: url('./pin.png'); */
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center bottom;
   z-index: 10;
-  /* Remove old CSS circle styles */
   background-color: transparent;
   border-radius: 0;
   box-shadow: none;
 }
 
-
-
-/* Ensure the letter container also has the pin correctly */
 .letter-container .pin {
-    top: -25px; /* Adjust as needed for the letter */
+   top: -25px; 
 }
 
-/* --- THE FINAL LETTER --- */
 .letter-container {
   position: relative;
   margin-top: 80px;
   width: 320px;
-  background: #fffdf0; /* Creamy paper color */
+  background: #fffdf0;
   padding: 30px;
   box-shadow: 0 5px 15px rgba(0,0,0,0.1);
   border: 1px solid #e0e0e0;
   z-index: 1;
-  /* Paper texture effect */
   background-image: linear-gradient(#eee .1rem, transparent .1rem);
   background-size: 100% 1.5rem;
   line-height: 1.5rem;
@@ -552,7 +426,7 @@ body { margin: 0; overflow: hidden; background-color: #fff5f8; font-family: 'Pop
 }
 
 .letter-body {
-  font-family: 'Great Vibes', cursive; /* Handwritten font */
+  font-family: 'Great Vibes', cursive; 
   font-size: 1.8rem;
   color: #444;
   text-align: left;
@@ -567,31 +441,29 @@ body { margin: 0; overflow: hidden; background-color: #fff5f8; font-family: 'Pop
 }
 
 @media screen and (max-width: 768px) {
-  
   .gallery-container {
-    max-width: 100%; /* Use full width */
-    overflow-x: hidden; /* Prevent horizontal scroll */
+    max-width: 100%; 
+    overflow-x: hidden;
   }
 
   .polaroid-card {
-    width: 80%; /* Cards take up 80% of screen width */
+    width: 80%; 
     margin-bottom: 80px;
   }
 
   .polaroid-card:nth-of-type(even) {
-  margin-left: -45px;
-}
-.polaroid-card:nth-of-type(odd) {
-  margin-left: 45px;
-}
+    margin-left: -45px;
+  }
+  .polaroid-card:nth-of-type(odd) {
+    margin-left: 45px;
+  }
 
-  /* Adjust letter size for mobile */
   .letter-container {
     width: 85%;
     padding: 20px;
   }
   
   .letter-body {
-    font-size: 1.4rem; /* Smaller text for mobile */
+    font-size: 1.4rem; 
   }
 }

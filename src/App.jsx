@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Confetti from 'react-confetti';
 import { motion, AnimatePresence } from 'framer-motion';
-import {  Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import './App.css';
-
 
 const TARGET_DATE = "2026-02-05T15:57:00"; 
 
@@ -36,8 +35,10 @@ function App() {
   const microphoneRef = useRef(null);
   const streamRef = useRef(null);
   const animationFrameRef = useRef(null);
-  const songRef = useRef(new Audio(process.env.PUBLIC_URL + '/song.mp3'));
-  const popRef = useRef(new Audio(process.env.PUBLIC_URL + '/pop.mp3'));
+  
+  // VITE CHANGE: Direct paths allow access to public folder assets
+  const songRef = useRef(new Audio('/song.mp3'));
+  const popRef = useRef(new Audio('/pop.mp3'));
 
   function calculateTimeLeft() {
     const difference = +new Date(TARGET_DATE) - +new Date();
@@ -46,7 +47,6 @@ function App() {
 
   // --- TIMER LOOP ---
   useEffect(() => {
-    // Only run the timer if we are in the countdown stage
     if (stage !== 'countdown') return;
 
     const timer = setInterval(() => {
@@ -63,13 +63,9 @@ function App() {
       songRef.current.loop = true;
       songRef.current.volume = 0.5;
       
-      // Play the song (safe because user clicked to enter this stage)
       songRef.current.play().catch(e => console.log("Audio play failed:", e));
-
-      // Start listening to microphone after a short delay
       setTimeout(() => startListening(), 1000);
     } else {
-      // Stop listening when leaving cake stage
       stopListening();
       songRef.current.pause();
     }
@@ -83,27 +79,25 @@ function App() {
   const startListening = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      streamRef.current = stream; // Store the stream so we can stop it later
+      streamRef.current = stream; 
       
       audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
       analyserRef.current = audioContextRef.current.createAnalyser();
       microphoneRef.current = audioContextRef.current.createMediaStreamSource(stream);
       microphoneRef.current.connect(analyserRef.current);
 
-      // Better settings for detecting blowing
-      analyserRef.current.fftSize = 2048; // Higher resolution
-      analyserRef.current.smoothingTimeConstant = 0.3; // Less smoothing for quick response
+      analyserRef.current.fftSize = 2048; 
+      analyserRef.current.smoothingTimeConstant = 0.3; 
 
       const bufferLength = analyserRef.current.frequencyBinCount;
       const dataArray = new Uint8Array(bufferLength);
 
       let blowTriggerCount = 0;
-      const BLOW_THRESHOLD = 50; // Adjust based on testing
-      const REQUIRED_FRAMES = 3; // Must sustain for 3 frames (~50ms)
-      const LOW_FREQ_RANGE = 10; // Check first 10 frequency bins (low frequencies)
+      const BLOW_THRESHOLD = 50; 
+      const REQUIRED_FRAMES = 3; 
+      const LOW_FREQ_RANGE = 10; 
 
       const checkVolume = () => {
-        // Stop if candles are already blown
         if (candlesBlown) {
           stopListening();
           return;
@@ -112,39 +106,32 @@ function App() {
         if (analyserRef.current) {
           analyserRef.current.getByteFrequencyData(dataArray);
 
-          // Focus on LOW frequencies - blowing creates low-frequency noise
           let lowFreqSum = 0;
           for (let i = 0; i < LOW_FREQ_RANGE; i++) {
             lowFreqSum += dataArray[i];
           }
           const lowFreqAverage = lowFreqSum / LOW_FREQ_RANGE;
 
-          // Also check overall energy for sudden spikes
           let totalSum = 0;
           for (let i = 0; i < bufferLength; i++) {
             totalSum += dataArray[i];
           }
           const totalAverage = totalSum / bufferLength;
 
-          console.log("Low freq:", lowFreqAverage.toFixed(2), "Total:", totalAverage.toFixed(2));
+          // console.log("Low freq:", lowFreqAverage.toFixed(2), "Total:", totalAverage.toFixed(2));
 
-          // Detect blow: strong low frequencies OR sudden spike in total energy
           if (lowFreqAverage > BLOW_THRESHOLD || totalAverage > 35) {
             blowTriggerCount++;
-            console.log("Blow detected! Count:", blowTriggerCount);
           } else {
             blowTriggerCount = 0;
           }
 
-          // Trigger candle blow out after sustained detection
           if (blowTriggerCount >= REQUIRED_FRAMES) {
-            console.log("🎂 Candles blown out!");
             blowOutCandles();
-            return; // Stop the loop
+            return; 
           }
         }
 
-        // Store the animation frame ID so we can cancel it later
         animationFrameRef.current = requestAnimationFrame(checkVolume);
       };
 
@@ -158,37 +145,27 @@ function App() {
   const blowOutCandles = () => {
     if (candlesBlown) return;
     setCandlesBlown(true);
-    
-    // Stop listening immediately
     stopListening();
-    
-    // Play pop sound
     popRef.current.play().catch(() => { });
-    
-    // Transition to gift stage after 3 seconds
     setTimeout(() => setStage('gift'), 3000);
   };
 
   const stopListening = () => {
-    // Cancel animation frame
     if (animationFrameRef.current) {
       cancelAnimationFrame(animationFrameRef.current);
       animationFrameRef.current = null;
     }
 
-    // Disconnect audio nodes
     if (microphoneRef.current) {
       microphoneRef.current.disconnect();
       microphoneRef.current = null;
     }
 
-    // Close audio context
     if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
       audioContextRef.current.close();
       audioContextRef.current = null;
     }
 
-    // Stop all tracks in the media stream (turns off mic)
     if (streamRef.current) {
       streamRef.current.getTracks().forEach(track => {
         track.stop();
@@ -200,7 +177,6 @@ function App() {
     analyserRef.current = null;
   };
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       stopListening();
@@ -220,31 +196,25 @@ function App() {
   };
 
   const generateThreadPath = (count) => {
-
     const stepY = 450;
-    let path = `M 50 0 `; // Start top center (assuming viewbox 0-100 width)
-
+    let path = `M 50 0 `; 
     for (let i = 0; i <= count; i++) {
       const yStart = i * stepY;
       const yEnd = (i + 1) * stepY;
       const controlX = i % 2 === 0 ? 10 : 90;
       path += `Q ${controlX} ${yStart + stepY / 2}, 50 ${yEnd} `;
-
     }
-
     return path;
-
   };
 
   const getBackgroundImage = () => {
-    if (stage === 'gallery') return `url('${process.env.PUBLIC_URL}/gallerybackground.png')`;
-    // Default background for other stages (optional, or use color)
+    // VITE CHANGE: Removed process.env.PUBLIC_URL
+    if (stage === 'gallery') return `url('/gallerybackground.png')`;
     return 'none'; 
   };
 
   return (
     <div className="App">
-
       <div 
         className="global-background" 
         style={{ backgroundImage: getBackgroundImage() }}
@@ -253,32 +223,23 @@ function App() {
       {candlesBlown && <Confetti numberOfPieces={300} recycle={stage !== 'gallery'} />}
 
       <AnimatePresence >
-
         {/* STAGE 1: COUNTDOWN */}
-       {stage === 'countdown' && (
+        {stage === 'countdown' && (
           <motion.div 
             key="count" 
             className="screen countdown-screen" 
             exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.5 } }}
           >
             <div className="countdown-container">
-              
-              {/* HEADER: Sparkles & Title */}
               <div className="text-center">
-                {/* The Lucide Icon with Pulse Animation */}
                 <Sparkles className="sparkle-icon" />
-                
                 <h1 className="countdown-title">Something Special is Coming...</h1>
                 <p className="countdown-subtitle">Get Ready! 🎉</p>
               </div>
 
-              {/* TIMER: Bouncing & Glowing */}
               <div className="timer-wrapper">
                 {timeLeft > 0 ? (
                   <>
-                    {/* Layer 1: Blurred Glow */}
-                    
-                    {/* Layer 2: Sharp Text */}
                     <div className="timer-text main-text">
                       {formatTime(timeLeft)}
                     </div>
@@ -299,7 +260,6 @@ function App() {
           </motion.div>
         )}
 
-
         {/* STAGE 2: THE CAKE PARTY */}
         {stage === 'cake' && (
           <motion.div key="cake" className="screen cake-screen"
@@ -307,16 +267,16 @@ function App() {
           >
             <div
               className="ribbon-banner"
-              style={{ backgroundImage: `url('${process.env.PUBLIC_URL}/ribbons.png')` }}
+              style={{ backgroundImage: `url('/ribbons.png')` }}
             ></div>
 
             <div className="decorations">
-              <img src={process.env.PUBLIC_URL + '/balloons.png'} alt="Balloon" className="fixed-balloon" style={{ top: '20%', left: '5%' }} />
-              <img src={process.env.PUBLIC_URL + '/balloons.png'} alt="Balloon" className="fixed-balloon" style={{ top: '15%', right: '10%' }} />
-              <img src={process.env.PUBLIC_URL + '/balloons.png'} alt="Balloon" className="fixed-balloon" style={{ top: '50%', left: '10%' }} />
-              <img src={process.env.PUBLIC_URL + '/balloons.png'} alt="Balloon" className="fixed-balloon" style={{ bottom: '30%', right: '15%' }} />
-              <img src={process.env.PUBLIC_URL + '/balloons.png'} alt="Balloon" className="fixed-balloon" style={{ bottom: '20%', left: '0' }} />
-              <img src={process.env.PUBLIC_URL + '/balloons.png'} alt="Balloon" className="fixed-balloon" style={{ bottom: '50%', right: '25%' }} />
+              <img src={'/balloons.png'} alt="Balloon" className="fixed-balloon" style={{ top: '20%', left: '5%' }} />
+              <img src={'/balloons.png'} alt="Balloon" className="fixed-balloon" style={{ top: '15%', right: '10%' }} />
+              <img src={'/balloons.png'} alt="Balloon" className="fixed-balloon" style={{ top: '50%', left: '10%' }} />
+              <img src={'/balloons.png'} alt="Balloon" className="fixed-balloon" style={{ bottom: '30%', right: '15%' }} />
+              <img src={'/balloons.png'} alt="Balloon" className="fixed-balloon" style={{ bottom: '20%', left: '0' }} />
+              <img src={'/balloons.png'} alt="Balloon" className="fixed-balloon" style={{ bottom: '50%', right: '25%' }} />
             </div>
 
             <div className="banner-text">Happy Birthday My Love!</div>
@@ -329,7 +289,7 @@ function App() {
                   </div>
                 ))}
               </div>
-              <img src={process.env.PUBLIC_URL + '/cakeimg.png'} alt="Cake" className="cake-image" />
+              <img src={'/cakeimg.png'} alt="Cake" className="cake-image" />
             </div>
 
             <p style={{ marginTop: 20, zIndex: 10, color: '#555', fontWeight: 'bold' }}>
@@ -362,59 +322,48 @@ function App() {
         {/* STAGE 4: NEW VERTICAL GALLERY */}
         {stage === 'gallery' && (
           <motion.div key="gallery" className="screen gallery-screen" 
-            style={{backgroundImage : `url('${process.env.PUBLIC_URL}/gallerybackground.png')`}}
+            style={{backgroundImage : `url('/gallerybackground.png')`}}
             initial={{ opacity: 0 }} animate={{ opacity: 1 }}
           >
             <div className="gallery-container">
-              
-              {/* THE THREAD (SVG) */}
                <svg className="thread-svg" viewBox={`0 0 100 ${GALLERY_DATA.length * 400 + 400}`} preserveAspectRatio="none">
-
                  <path d={generateThreadPath(GALLERY_DATA.length)} stroke="#8d6e63" strokeWidth="0.5" fill="none" />
-
               </svg>
 
               {GALLERY_DATA.map((card, index) => (
                 <motion.div
                   key={index}
                   className="polaroid-card"
-                  // Initial state: invisible and slightly down
                   initial={{ opacity: 0, y: 50 }}
-                  // Animate when in view: fade in, move up, AND start swinging continuously
                   whileInView={{
                     opacity: 1,
                     y: 0,
-                    // Keyframes for swinging: rotate back and forth slightly
                     rotate: index % 2 === 0 ? [2, -2] : [-2, 2]
                   }}
                   viewport={{ once: true, amount: 0.3 }}
                   transition={{
                     opacity: { duration: 0.8, delay: index * 0.2 },
                     y: { duration: 0.8, delay: index * 0.2 },
-                    // Swing transition specifics
                     rotate: {
-                      duration: 3, // Time for one full swing cycle (slower is more peaceful)
-                      repeat: Infinity, // Loop forever
-                      repeatType: "mirror", // Swing back and forth seamlessly
-                      ease: "easeInOut", // Smooth turning points
-                      delay: index * 0.2 // Start swinging as it appears
+                      duration: 3, 
+                      repeat: Infinity, 
+                      repeatType: "mirror", 
+                      ease: "easeInOut", 
+                      delay: index * 0.2 
                     }
                   }}
                   style={{
-                    // CRITICAL: Set pivot point to top center for hanging effect
                     transformOrigin: 'top center',
                     zIndex: 5
                   }}
                 >
-                  {/* The Image Pin at top */}
-                  <div className="pin" style={{ backgroundImage: `url('${process.env.PUBLIC_URL}/pinimg.png')` }}></div>
+                  <div className="pin" style={{ backgroundImage: `url('/pinimg.png')` }}></div>
 
-                  <img src={`${process.env.PUBLIC_URL}/${card.img}`} alt="memory" className="polaroid-img" />
+                  <img src={`/${card.img}`} alt="memory" className="polaroid-img" />
                   <div className="polaroid-caption">{card.msg}</div>
                 </motion.div>
               ))}
 
-              {/* THE FINAL LETTER */}
               <motion.div 
                 className="letter-container"
                 initial={{ opacity: 0, scale: 0.8 }}
@@ -422,7 +371,7 @@ function App() {
                 viewport={{ once: true }}
                 transition={{ duration: 1 }}
               >
-                <div className="pin" style={{ backgroundImage: `url('${process.env.PUBLIC_URL}/pinimg.png')` }}></div>
+                <div className="pin" style={{ backgroundImage: `url('/pinimg.png')` }}></div>
                 <div className="letter-title">{LETTER_CONTENT.title}</div>
                 <div className="letter-body">
                   {LETTER_CONTENT.body}
@@ -430,12 +379,10 @@ function App() {
                 <div className="signature">{LETTER_CONTENT.sender}</div>
               </motion.div>
 
-              {/* Buffer at bottom */}
               <div style={{ height: '100px' }}></div>
             </div>
           </motion.div>
         )}
-
       </AnimatePresence>
     </div>
   );
